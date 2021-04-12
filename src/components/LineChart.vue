@@ -1,15 +1,6 @@
 <script>
 import { Line } from 'vue-chartjs';
 
-const xAxisOptions = {
-  xAxes: [{
-    scaleLabel: {
-      display: true,
-      labelString: 'Date'
-    }
-  }]
-};
-
 const yAxisOptions = {
   yAxes: [{
     scaleLabel: {
@@ -37,7 +28,7 @@ export default {
               text: 'Tube Algorithm Plot'
             },
             scales: {
-              ...xAxisOptions,
+              ...this.xAxisOptions,
               ...yAxisOptions
             },
             legend: {
@@ -52,6 +43,23 @@ export default {
     computedChartData() {
       this.$data._chart.destroy();
       this.renderLineChart();
+    }
+  },
+
+  computed: {
+    xAxisOptions() {
+      const xTicks = Math.floor(this.computedChartData.labels.length / 2);
+      return {
+        xAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: 'Date',
+          },
+          ticks: {
+            maxTicksLimit: xTicks
+          }
+        }]
+      }
     }
   },
 

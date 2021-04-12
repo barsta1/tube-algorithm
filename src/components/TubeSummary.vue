@@ -10,9 +10,21 @@
     <LineChart v-if="!isFiltered" :computed-chart-data="chartData"/>
     <LineChart v-if="isFiltered" :computed-chart-data="filteredChartData"/>
     <div class="spacer"></div>
-    <span class="error-value">MSE: {{ meanSquaredErrorValue }} | </span>
-    <span class="error-value">RMSE: {{ rootMeanSquaredErrorValue }} | </span>
-    <span class="error-value">MAPE: {{ meanAbsolutePercentageErrorValue }}</span>
+    <md-chip class="md-primary md-chip--spaced" :key="'MSE'">
+      <span>
+        <strong>MSE: {{ meanSquaredErrorValue }}</strong>
+      </span>
+    </md-chip>
+    <md-chip class="md-primary md-chip--spaced" :key="'RMSE'">
+      <span>
+        <strong>RMSE: {{ rootMeanSquaredErrorValue }}</strong>
+      </span>
+    </md-chip>
+    <md-chip class="md-primary md-chip--spaced" :key="'MAPE'">
+      <span>
+        <strong>MAPE: {{ meanAbsolutePercentageErrorValue }}</strong>
+      </span>
+    </md-chip>
     <div class="spacer"></div>
     <Table :tubes="tubes"/>
   </div>
@@ -50,7 +62,7 @@ const COLORS = {
 const defaultDataset = {
   fill: true,
   lineTension: 0,
-  label: 'Original Data',
+  label: 'Data',
   backgroundColor: 'transparent',
   borderColor: COLORS.BORDER,
   pointBackgroundColor: COLORS.POINT
@@ -264,7 +276,7 @@ export default {
 </script>
 
 <style scoped>
-  .error-value {
-    font-weight: bold;
+  .md-chip--spaced {
+    margin-right: 10px;
   }
 </style>

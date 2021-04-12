@@ -10,19 +10,19 @@
       <div class="md-layout-item md-medium-size-30 md-small-size-50 md-xsmall-size-100 md-large-size-20 md-xlarge-size-20">
         <md-field>
           <label>Tolerance factor</label>
-          <md-input v-model.number="toleranceFactor" :min="0.0001" type="number"></md-input>
+          <md-input v-model.number="toleranceFactor" :min="0" type="number"></md-input>
         </md-field>
       </div>
       <div class="md-layout-item md-medium-size-30 md-small-size-50 md-xsmall-size-100 md-large-size-20 md-xlarge-size-20">
         <md-field>
           <label>Minimal tolerance</label>
-          <md-input v-model.number="minTolerance" :min="0.0001" type="number"></md-input>
+          <md-input v-model.number="minTolerance" :min="0" type="number"></md-input>
         </md-field>
       </div>
       <div class="md-layout-item md-medium-size-30 md-small-size-50 md-xsmall-size-100 md-large-size-20 md-xlarge-size-20">
         <md-field>
           <label>Maximal tolerance</label>
-          <md-input v-model.number="maxTolerance" :min="0.0001" type="number"></md-input>
+          <md-input v-model.number="maxTolerance" :min="0" type="number"></md-input>
         </md-field>
       </div>
       <div class="md-layout-item md-medium-size-30 md-small-size-50 md-xsmall-size-100 md-large-size-20 md-xlarge-size-20">
