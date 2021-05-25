@@ -55,6 +55,9 @@ const getChunkedData = (data, singleChunkLength) => {
       tempArray = [];
     }
     tempArray.push(el);
+    if (index === data.length) {
+      chunkedData.push([...tempArray]);
+    }
   });
 
   return chunkedData;
@@ -164,7 +167,8 @@ export const round = (number, decimalPlaces) => {
  * @return {Array[]} an array of array chunks
  */
 export const getSummaryData = () => {
-  const stockDataConverted = getIndexedData(stockData).reverse().slice(300, 600);
+  console.log(stockData.length)
+  const stockDataConverted = getIndexedData(stockData).reverse();
   const stockDataMapped = mapData(stockDataConverted);
 
   return getChunkedData(stockDataMapped, 100);
