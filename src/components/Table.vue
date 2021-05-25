@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { round } from '../utils/helpers';
+import { round } from '@/utils/helpers';
 export default {
   name: 'Table',
 
@@ -33,7 +33,7 @@ export default {
 
     reduceTableCellData(data) {
       return data.reduce((acc, el, index) => {
-        const dataToAdd = acc.concat(`(${el.Date}, ${el.Close})`);
+        const dataToAdd = acc.concat(`(${ el.Date }, ${ el.Close })`);
         if (index === data.length - 1) {
           return dataToAdd;
         }

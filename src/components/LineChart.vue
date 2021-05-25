@@ -19,7 +19,7 @@ export default {
   methods: {
     renderLineChart() {
       this.renderChart(
-          {...this.computedChartData},
+          { ...this.computedChartData },
           {
             responsive: true,
             maintainAspectRatio: false,

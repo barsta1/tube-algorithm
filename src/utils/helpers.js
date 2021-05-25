@@ -1,4 +1,4 @@
-import { stockData } from '../data';
+import { stockData } from '@/data';
 
 /**
  * A function for getting indexed data
@@ -7,7 +7,7 @@ import { stockData } from '../data';
  */
 const getIndexedData = (data) => {
   return data.reduce((acc, el, index) => {
-    acc.push({...el, x: index})
+    acc.push({...el, x: index});
     return acc;
   }, [])
 };
@@ -22,8 +22,8 @@ const getMedianElement = (data) => {
   let lowMiddle = Math.floor((data.length - 1) / 2);
   let highMiddle = Math.floor((data.length - 1) / 2);
   const median = (data[lowMiddle].Close + data[highMiddle].Close) / 2;
-  const foundObject = data.find((el) => el.Close === median);
-  return foundObject;
+
+  return data.find((el) => el.Close === median);
 };
 
 /**
@@ -36,13 +36,14 @@ const mapData = (data) => {
     return {
       ...el,
       y: el.Close
-    }
+    };
   })
 };
 
 /**
  * A function for splitting data into separate, smaller datasets - makes it possible to display data on the chart
  * @param {Array} data
+ * @param {number} singleChunkLength -  length of chunk array
  * @return {Array[]} chunkedData
  */
 const getChunkedData = (data, singleChunkLength) => {
@@ -55,6 +56,7 @@ const getChunkedData = (data, singleChunkLength) => {
     }
     tempArray.push(el);
   });
+
   return chunkedData;
 };
 
@@ -76,6 +78,7 @@ export const getFilledArray = (array, fillValue) => {
  */
 export const medianFilter = (data, windowSize) => {
   const filteredValues = [];
+
   data.forEach((element, index) => {
     if (index >= windowSize - 1) {
       const dataToFilter = data.slice(index - windowSize + 1, index + 1);
@@ -84,35 +87,56 @@ export const medianFilter = (data, windowSize) => {
       filteredValues.push(element);
     }
   })
+
   return filteredValues;
 };
 
 /**
  * A MSE helper
- * @param {Array} array with original values
- * @param {Array} array with predicted values
+ * @param {Array} originalValues  - array with original values
+ * @param {Array} predictedValues - array with predicted values
  * @return {number} Mean Square Error
  */
 export const meanSquaredError = (originalValues, predictedValues) => {
-  let error = 0
+  let error = 0;
+
   for (let i = 0; i < originalValues.length; i++) {
     error += Math.pow((predictedValues[i] - originalValues[i]), 2)
   }
+
+  return error / originalValues.length;
+};
+
+/**
+ * A MAE helper
+ * @param {Array} originalValues - array with original values
+ * @param {Array} predictedValues - array with predicted values
+ * @return {number} Mean Absolute Percentage Error
+ */
+export const meanAbsoluteError = (originalValues, predictedValues) => {
+  let error = 0;
+
+  for (let i = 0; i < originalValues.length; i++) {
+    error += Math.abs((originalValues[i] - predictedValues[i]));
+  }
+
   return error / originalValues.length;
 };
 
 /**
  * A MAPE helper
- * @param {Array} array with original values
- * @param {Array} array with predicted values
+ * @param {Array} originalValues - array with original values
+ * @param {Array} predictedValues - array with predicted values
  * @return {number} Mean Absolute Percentage Error
  */
 export const meanAbsolutePercentageError = (originalValues, predictedValues) => {
-  let error = 0
+  let error = 0;
+
   for (let i = 0; i < originalValues.length; i++) {
     error += Math.abs((originalValues[i] - predictedValues[i]) / originalValues[i]);
   }
-  return error / originalValues.length;
+
+  return (error / originalValues.length) * 100;
 };
 
 /**
@@ -127,14 +151,13 @@ export const rootMeanSquaredError = (originalValues, predictedValues) => {
 
 /**
  * A function for rounding given number by given decimal places
- * @param {number} a value to round
- * @param {number} decimal places to which the value will be rounded
+ * @param {number} number - a value to round
+ * @param {number} decimalPlaces - number of decimal places to which the value will be rounded
  * @return {number} rounded value
  */
 export const round = (number, decimalPlaces) => {
   return Math.round(number * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces);
 };
-
 
 /**
  * A function for getting data to be then processed inside App.vue
@@ -143,8 +166,6 @@ export const round = (number, decimalPlaces) => {
 export const getSummaryData = () => {
   const stockDataConverted = getIndexedData(stockData).reverse().slice(300, 600);
   const stockDataMapped = mapData(stockDataConverted);
+
   return getChunkedData(stockDataMapped, 100);
 };
-
-
-

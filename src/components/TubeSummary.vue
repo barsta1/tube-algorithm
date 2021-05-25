@@ -20,9 +20,14 @@
         <strong>RMSE: {{ rootMeanSquaredErrorValue }}</strong>
       </span>
     </md-chip>
+    <md-chip class="md-primary md-chip--spaced" :key="'MAE'">
+      <span>
+        <strong>MAE: {{ meanAbsoluteErrorValue }}</strong>
+      </span>
+    </md-chip>
     <md-chip class="md-primary md-chip--spaced" :key="'MAPE'">
       <span>
-        <strong>MAPE: {{ meanAbsolutePercentageErrorValue }}</strong>
+        <strong>MAPE: {{ meanAbsolutePercentageErrorValue }}%</strong>
       </span>
     </md-chip>
     <div class="spacer"></div>
@@ -32,16 +37,17 @@
 
 <script>
 import LineChart from './LineChart.vue';
-import { Tube } from '../Tube/Tube';
+import { Tube } from '@/Tube/Tube';
 import {
   round,
   getFilledArray,
   meanSquaredError,
   meanAbsolutePercentageError,
+  meanAbsoluteError,
   rootMeanSquaredError, medianFilter
-} from '../utils/helpers';
+} from '@/utils/helpers';
 import Table from '@/components/Table';
-import FormComponent from "@/components/FormComponent";
+import FormComponent from '@/components/FormComponent';
 
 const TUBE_BORDER = {
   UPPER: 'upper',
@@ -57,7 +63,7 @@ const COLORS = {
   TUBE_ANOMALY_BORDER: 'rgba(255, 0, 0, 0.5)',
   TUBE_ANOMALY_POINT: 'rgba(255, 0, 0, 1)',
   TUBE_ANOMALY_FILL: 'rgba(255, 0, 0, 0.3)'
-}
+};
 
 const defaultDataset = {
   fill: true,
@@ -66,7 +72,7 @@ const defaultDataset = {
   backgroundColor: 'transparent',
   borderColor: COLORS.BORDER,
   pointBackgroundColor: COLORS.POINT
-}
+};
 
 const defaultTubeDataset = {
   fill: false,
@@ -75,7 +81,7 @@ const defaultTubeDataset = {
   backgroundColor: 'transparent',
   borderColor: COLORS.TUBE_BORDER,
   pointBackgroundColor: COLORS.TUBE_POINT
-}
+};
 
 export default {
   name: 'TubeSummary',
@@ -108,33 +114,36 @@ export default {
 
     getLabel(tubeBorder, tubeDataIndex) {
       if (tubeBorder === TUBE_BORDER.UPPER) {
-        return `Upper tube border (${tubeDataIndex + 1})`;
+        return `Upper tube border (${ tubeDataIndex + 1 })`;
       }
-      return `Bottom tube border (${tubeDataIndex + 1})`;
+
+      return `Bottom tube border (${ tubeDataIndex + 1 })`;
     },
 
     isAnomaly(pointsToAppend) {
       let isAnomaly = false;
       let anomalyIndex = null;
+
       pointsToAppend.forEach((point, index) => {
         if (!this.tube.isInTube(point)) {
           isAnomaly = true;
           anomalyIndex = index;
         }
       })
-      return {isAnomaly, anomalyIndex};
+
+      return { isAnomaly, anomalyIndex };
     },
 
     handleFirstPoint(upperTubeData, bottomTubeData, data) {
       this.tubes = [];
       const firstPoints = data.slice(0, this.minTubeSize);
       this.tube = new Tube(this.minTolerance, this.maxTolerance, this.toleranceFactor, firstPoints, 0);
-      const {isAnomaly} = this.isAnomaly(firstPoints);
-      this.tube.isAnomaly = isAnomaly
+      const { isAnomaly } = this.isAnomaly(firstPoints);
+      this.tube.isAnomaly = isAnomaly;
       this.tubes.push(this.tube);
 
-      upperTubeData[0] = {data: getFilledArray(data,null), borderType: TUBE_BORDER.UPPER};
-      bottomTubeData[0] = {data: getFilledArray(data,null), borderType: TUBE_BORDER.BOTTOM};
+      upperTubeData[0] = { data: getFilledArray(data,null), borderType: TUBE_BORDER.UPPER };
+      bottomTubeData[0] = { data: getFilledArray(data,null), borderType: TUBE_BORDER.BOTTOM };
     },
 
     updateTubeData(tubeData, tubeDataIndex, point, index) {
@@ -146,19 +155,20 @@ export default {
         borderColor: this.tube.isAnomaly ? COLORS.TUBE_ANOMALY_BORDER : COLORS.TUBE_BORDER,
         label: this.getLabel(tubeBorder, tubeDataIndex)
       };
+
       if (tubeBorder === TUBE_BORDER.UPPER) {
         tubeData[tubeDataIndex].data[index] = this.round(this.tube.getUpperTube(point), 2);
         tubeData[tubeDataIndex] = {
           ...tubeData[tubeDataIndex],
           fill: true,
-          backgroundColor: 'transparent',
+          backgroundColor: 'transparent'
         };
       } else {
         tubeData[tubeDataIndex].data[index] = this.round(this.tube.getBottomTube(point), 2);
         tubeData[tubeDataIndex] = {
           ...tubeData[tubeDataIndex],
           fill: '-1',
-          backgroundColor: this.tube.isAnomaly ? COLORS.TUBE_ANOMALY_FILL : COLORS.TUBE_FILL,
+          backgroundColor: this.tube.isAnomaly ? COLORS.TUBE_ANOMALY_FILL : COLORS.TUBE_FILL
         };
       }
     },
@@ -171,14 +181,14 @@ export default {
     handlePointOutsideTube(upperTubeData, bottomTubeData, tubeDataIndex, index, point, data) {
       const pointsToAppend = data.slice(index, index + this.minTubeSize);
       this.tube = new Tube(this.minTolerance, this.maxTolerance, this.toleranceFactor, pointsToAppend, tubeDataIndex);
-      const {isAnomaly, anomalyIndex} = this.isAnomaly(pointsToAppend);
+      const { isAnomaly, anomalyIndex } = this.isAnomaly(pointsToAppend);
       this.tube.isAnomaly = isAnomaly;
       this.tubes.push(this.tube);
 
-      upperTubeData[tubeDataIndex] = {data: getFilledArray(data,null), borderType: TUBE_BORDER.UPPER};
+      upperTubeData[tubeDataIndex] = { data: getFilledArray(data,null), borderType: TUBE_BORDER.UPPER };
       this.updateTubeData(upperTubeData, tubeDataIndex, point, index);
 
-      bottomTubeData[tubeDataIndex] = {data: getFilledArray(data,null), borderType: TUBE_BORDER.BOTTOM};
+      bottomTubeData[tubeDataIndex] = { data: getFilledArray(data,null), borderType: TUBE_BORDER.BOTTOM };
       this.updateTubeData(bottomTubeData, tubeDataIndex, point, index);
 
       return anomalyIndex === 0;
@@ -189,14 +199,9 @@ export default {
       upperTubeData.forEach((element, index) => {
         finalTubeData.push(element);
         finalTubeData.push(bottomTubeData[index]);
-      })
-      return finalTubeData;
-    },
+      });
 
-    getRegressionData() {
-      return this.summaryData.map(({y}) => {
-        return this.tube.makeRegression(y);
-      })
+      return finalTubeData;
     },
 
     computeChartData(data) {
@@ -204,73 +209,100 @@ export default {
       const bottomTubeData = [];
       let tubeDataIndex = 0;
       let isLastPointAnomaly = false;
+
       data.forEach((point, index) => {
         if (index === 0) {
           this.handleFirstPoint(upperTubeData, bottomTubeData, data);
-        }
-        if (this.tube.isInTube(point) && !isLastPointAnomaly) {
+        } if (this.tube.isInTube(point) && !isLastPointAnomaly) {
           this.handlePointInsideTube(upperTubeData, bottomTubeData, tubeDataIndex, index, point);
         } else {
           tubeDataIndex += 1;
-          const isLastPtAnomaly = this.handlePointOutsideTube(upperTubeData, bottomTubeData, tubeDataIndex, index,
+          isLastPointAnomaly = this.handlePointOutsideTube(upperTubeData, bottomTubeData, tubeDataIndex, index,
               point, data);
-          isLastPointAnomaly = isLastPtAnomaly;
         }
       });
-      return {upperTubeData, bottomTubeData};
+
+      return { upperTubeData, bottomTubeData };
     },
 
     getChartOptions(data, finalTubeData) {
       return {
-        labels: data.map(({Date}) => Date),
+        labels: data.map(({ Date }) => Date),
         datasets: [
           {
             ...defaultDataset,
-            data: data.map(({y}) => y)
+            data: data.map(({ y }) => y)
           },
           ...finalTubeData
         ]
       }
+    },
+
+    reduceTubeBorderData(tubeBorderData) {
+      return tubeBorderData.reduce((acc, val) => {
+        return acc.concat(...val.data.filter(el => el));
+      }, []);
     }
   },
 
   computed: {
+    tubeBordersData() {
+      if (this.isFiltered) {
+        return this.computeChartData(this.filteredData);
+      }
+
+      return this.computeChartData(this.summaryData);
+    },
+
     chartData() {
-      const {upperTubeData, bottomTubeData} = this.computeChartData(this.summaryData);
+      const { upperTubeData, bottomTubeData } = this.tubeBordersData;
       const finalTubeData = this.getFinalTubeData(upperTubeData, bottomTubeData);
+
       return this.getChartOptions(this.summaryData, finalTubeData);
     },
 
-    filteredChartData() {
+    filteredData() {
       let filteredData = medianFilter(this.summaryData, 3);
-      filteredData = this.summaryData.map((element, index) => {
+
+      return this.summaryData.map((element, index) => {
         return {
           ...element,
           Close: filteredData[index].Close,
           y: filteredData[index].Close
         }
       })
+    },
 
-      const {upperTubeData, bottomTubeData} = this.computeChartData(filteredData);
+    filteredChartData() {
+      const { upperTubeData, bottomTubeData } = this.tubeBordersData;
       const finalTubeData = this.getFinalTubeData(upperTubeData, bottomTubeData);
 
-      return this.getChartOptions(filteredData, finalTubeData);
+      return this.getChartOptions(this.filteredData, finalTubeData);
     },
 
     meanSquaredErrorValue() {
-      const regressionData = this.getRegressionData();
-      return round(meanSquaredError(this.summaryData.map(({y}) => y), regressionData), 2);
+      return round(meanSquaredError(this.summaryData.map(({ y }) => y), this.tubeCenterValues), 2);
     },
 
     rootMeanSquaredErrorValue() {
-      const regressionData = this.getRegressionData();
-      return round(rootMeanSquaredError(this.summaryData.map(({y}) => y), regressionData), 2);
+      return round(rootMeanSquaredError(this.summaryData.map(({ y }) => y), this.tubeCenterValues), 2);
     },
 
     meanAbsolutePercentageErrorValue() {
-      const regressionData = this.getRegressionData();
-      return round(meanAbsolutePercentageError(this.summaryData.map(({y}) => y), regressionData), 2);
-    }
+      return round(meanAbsolutePercentageError(this.summaryData.map(({ y }) => y), this.tubeCenterValues), 2);
+    },
+
+    meanAbsoluteErrorValue() {
+      return round(meanAbsoluteError(this.summaryData.map(({ y }) => y), this.tubeCenterValues), 2);
+    },
+
+    tubeCenterValues() {
+      const { upperTubeData, bottomTubeData } = this.tubeBordersData;
+      const upperTubeValues = this.reduceTubeBorderData(upperTubeData);
+      const bottomTubeValues = this.reduceTubeBorderData(bottomTubeData);
+
+      return upperTubeValues.map((upperTubeValue, index) => (upperTubeValue + bottomTubeValues[index]) / 2);
+    },
   }
 }
 </script>
