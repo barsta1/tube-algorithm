@@ -167,7 +167,6 @@ export const round = (number, decimalPlaces) => {
  * @return {Array[]} an array of array chunks
  */
 export const getSummaryData = () => {
-  console.log(stockData.length)
   const stockDataConverted = getIndexedData(stockData).reverse();
   const stockDataMapped = mapData(stockDataConverted);
 
