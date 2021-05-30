@@ -1,4 +1,4 @@
-export const stockData = [
+export const crashStockData = [
   {
     "Timestamp": 1586390400000,
     "Date": "2020-04-09 00:00:00",

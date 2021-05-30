@@ -6,6 +6,13 @@
     @minToleranceChanged="minTolerance=$event"
     @maxToleranceChanged="maxTolerance=$event"
     @isFilteredChanged="isFiltered=$event"
+    @filterWindowSizeChanged="filteringWindowSize=$event"
+    :minTubeSize="minTubeSize"
+    :toleranceFactor="toleranceFactor"
+    :minTolerance="minTolerance"
+    :maxTolerance="maxTolerance"
+    :isFiltered="isFiltered"
+    :filteringWindowSize="filteringWindowSize"
     ></FormComponent>
     <LineChart v-if="!isFiltered" :computed-chart-data="chartData"/>
     <LineChart v-if="isFiltered" :computed-chart-data="filteredChartData"/>
@@ -92,7 +99,8 @@ export default {
   },
 
   props: {
-    summaryData: []
+    summaryData: Array,
+    chosenDataset: String
   },
 
   data() {
@@ -101,6 +109,7 @@ export default {
       toleranceFactor: 10,
       minTolerance: 1,
       maxTolerance: 90,
+      filteringWindowSize: 3,
       isFiltered: false,
       tube: null,
       tubes: []
@@ -262,7 +271,7 @@ export default {
     },
 
     filteredData() {
-      let filteredData = medianFilter(this.summaryData, 3);
+      let filteredData = medianFilter(this.summaryData, this.filteringWindowSize);
 
       return this.summaryData.map((element, index) => {
         return {
@@ -303,7 +312,18 @@ export default {
 
       return upperTubeValues.map((upperTubeValue, index) => (upperTubeValue + bottomTubeValues[index]) / 2);
     },
+  },
+
+  watch: {
+    chosenDataset(value) {
+      if (value === 'crash') {
+        this.maxTolerance = 90;
+      } else {
+        this.maxTolerance = 617;
+      }
+    }
   }
+
 }
 </script>
 

@@ -1,4 +1,5 @@
-import { stockData } from '@/data';
+import { crashStockData } from '@/data_covid_crash';
+import { boomStockData } from '@/data_tesla_boom';
 
 /**
  * A function for getting indexed data
@@ -166,8 +167,13 @@ export const round = (number, decimalPlaces) => {
  * A function for getting data to be then processed inside App.vue
  * @return {Array[]} an array of array chunks
  */
-export const getSummaryData = () => {
-  const stockDataConverted = getIndexedData(stockData).reverse();
+export const getSummaryData = (chosenDatasetType) => {
+  let data = boomStockData;
+  if (chosenDatasetType === 'crash') {
+    data = crashStockData;
+  }
+
+  const stockDataConverted = getIndexedData(data).reverse();
   const stockDataMapped = mapData(stockDataConverted);
 
   return getChunkedData(stockDataMapped, 100);

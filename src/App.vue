@@ -2,10 +2,25 @@
   <div id="app">
     <span class="md-display-3">Tube Algorithm</span>
     <div class="spacer"></div>
+    <form>
+      <div class="md-layout md-gutter">
+        <div class="md-layout-item md-medium-size-30 md-small-size-50 md-xsmall-size-100 md-large-size-20 md-xlarge-size-20">
+          <md-field>
+            <label>Chosen dataset</label>
+            <md-select v-model="chosenDataset" name="chosenDataset" md-dense>
+              <md-option value='crash'>Crash on 12th of March, 2020</md-option>
+              <md-option value='boom'>Boom on 8th of February, 2021</md-option>
+            </md-select>
+          </md-field>
+        </div>
+      </div>
+    </form>
     <div v-for="(dataSlice, index) of data" :key="index">
       <span class="md-display-1">Data From {{dataSlice[0].Date}} to {{dataSlice[dataSlice.length - 1].Date}}</span>
       <div class="spacer"></div>
-      <TubeSummary :summaryData="dataSlice"/>
+      <TubeSummary
+          :summaryData="dataSlice"
+          :chosenDataset="chosenDataset"/>
       <div v-if="index !== data.length - 1">
         <div class="spacer"></div>
         <div class="spacer"></div>
@@ -27,8 +42,15 @@ export default {
 
   data() {
     return {
-      data: getSummaryData()
+      data: getSummaryData('crash'),
+      chosenDataset: 'crash'
     };
+  },
+
+  watch: {
+    chosenDataset(value) {
+      this.data = getSummaryData(value);
+    }
   }
 };
 </script>
@@ -51,4 +73,5 @@ export default {
 .spacer {
   height: 25px;
 }
+
 </style>

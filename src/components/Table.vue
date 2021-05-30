@@ -6,8 +6,8 @@
     <md-table-row slot="md-table-row" slot-scope="{ item }">
       <md-table-cell md-label="Tube No." md-numeric>{{ item.tubeIndex + 1 }}</md-table-cell>
       <md-table-cell md-label="Data">{{ reduceTableCellData(item.data) }}</md-table-cell>
-      <md-table-cell md-label="Slope">{{ round(item.slope, 3) }}</md-table-cell>
-      <md-table-cell md-label="Intercept">{{ round(item.intercept, 3) }}</md-table-cell>
+      <md-table-cell md-label="Slope">{{ isNaN(item.slope) ? '-' : round(item.slope, 3) }}</md-table-cell>
+      <md-table-cell md-label="Intercept">{{ isNaN(item.intercept) ? '-' : round(item.intercept, 3) }}</md-table-cell>
       <md-table-cell md-label="Tolerance">{{ round(item.tolerance, 3) }}</md-table-cell>
       <md-table-cell md-label="Anomaly">
         <span :class="[item.isAnomaly ? 'anomaly' : 'non-anomaly']">

@@ -41,7 +41,7 @@ export class Tube {
 
   makeRegression(predictedValue) {
     /* Handle case when a regression for a single sample was assessed - in this case return the original value */
-    if (!this.slope && !this.intercept) {
+    if (!this.slope && !this.intercept || this.data.length === 1) {
       return this.data[0].y;
     }
 
